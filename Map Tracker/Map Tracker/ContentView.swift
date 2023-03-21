@@ -1,21 +1,33 @@
-//
-//  ContentView.swift
-//  Map Tracker
-//
-//  Created by Faisal Atif on 2023-03-21.
-//
-
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var viewModel = TrackerViewModel()
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        ZStack {
+            if viewModel.tracking {
+                Color.red
+            } else {
+                Color.green
+            }
+            
+            Button(action: {
+                viewModel.tracking.toggle()
+            }) {
+                VStack {
+                    if viewModel.tracking {
+                        Text("Stop Tracking")
+                            .font(.largeTitle)
+                            .foregroundColor(.white)
+                    } else {
+                        Text("Start Tracking")
+                            .font(.largeTitle)
+                            .foregroundColor(.white)
+                    }
+                }
+            }
         }
-        .padding()
+        .edgesIgnoringSafeArea(.all)
     }
 }
 

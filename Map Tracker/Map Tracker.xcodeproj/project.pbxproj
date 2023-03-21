@@ -8,9 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		3A00251C29CA5B7E0014649F /* Map_TrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A00251B29CA5B7E0014649F /* Map_TrackerApp.swift */; };
-		3A00251E29CA5B7E0014649F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A00251D29CA5B7E0014649F /* ContentView.swift */; };
 		3A00252029CA5B7F0014649F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3A00251F29CA5B7F0014649F /* Assets.xcassets */; };
 		3A00252329CA5B7F0014649F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3A00252229CA5B7F0014649F /* Preview Assets.xcassets */; };
+		7C15DEA829CA668B0009A453 /* TrackerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C15DEA629CA65EA0009A453 /* TrackerViewModel.swift */; };
+		7C15DEA929CA66940009A453 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A00251D29CA5B7E0014649F /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +20,7 @@
 		3A00251D29CA5B7E0014649F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		3A00251F29CA5B7F0014649F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3A00252229CA5B7F0014649F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		7C15DEA629CA65EA0009A453 /* TrackerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 				3A00251D29CA5B7E0014649F /* ContentView.swift */,
 				3A00251F29CA5B7F0014649F /* Assets.xcassets */,
 				3A00252129CA5B7F0014649F /* Preview Content */,
+				7C15DEA629CA65EA0009A453 /* TrackerViewModel.swift */,
 			);
 			path = "Map Tracker";
 			sourceTree = "<group>";
@@ -137,8 +140,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3A00251E29CA5B7E0014649F /* ContentView.swift in Sources */,
 				3A00251C29CA5B7E0014649F /* Map_TrackerApp.swift in Sources */,
+				7C15DEA829CA668B0009A453 /* TrackerViewModel.swift in Sources */,
+				7C15DEA929CA66940009A453 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
