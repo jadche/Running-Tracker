@@ -115,17 +115,36 @@ struct MapView: UIViewRepresentable {
     var route: [CLLocationCoordinate2D]
 
     // Creates an instance of 'MKMapView', sets its delegate to the coordinator and returns it.
+    
+    //replacement bellow
+//    func makeUIView(context: Context) -> MKMapView {
+//        let mapView = MKMapView()
+//        mapView.showsUserLocation = true
+//        mapView.delegate = context.coordinator
+//        // To do change the coor from hard cooded to user's location
+//        let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 70.7749, longitude: -81.4194), latitudinalMeters: 500, longitudinalMeters: 500)
+//        mapView.setRegion(region, animated: false)
+//        return mapView
+//    }
+    
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
         mapView.showsUserLocation = true
         mapView.delegate = context.coordinator
-        let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), latitudinalMeters: 500, longitudinalMeters: 500)
-        mapView.setRegion(region, animated: false)
+
+        // Center the map view on the user's location once it becomes available
+        if let userLocation = mapView.userLocation.location {
+            let region = MKCoordinateRegion(center: userLocation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500)
+            mapView.setRegion(region, animated: false)
+            print(userLocation.coordinate)
+        }
+
         return mapView
     }
 
     // Updates the map view when the route binding changes
     // It removes all existing overlays and annotations, creates a new polyline with the route's coordinates, and adds it as an overlay to the map view.
+    //Creates the marker
     func updateUIView(_ uiView: MKMapView, context: Context) {
         uiView.removeOverlays(uiView.overlays)
         uiView.removeAnnotations(uiView.annotations)
@@ -172,18 +191,18 @@ struct MapView: UIViewRepresentable {
             return MKOverlayRenderer(overlay: overlay)
         }
 
-        // Customize the appearance of the annotation views
-        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-            if annotation is MKUserLocation {
-                // Use the default blue dot for the user's current location
-                return nil
-            }
-
-            let annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "pin")
-            annotationView.pinTintColor = UIColor.blue
-            annotationView.canShowCallout = true
-            return annotationView
-        }
+//        // Customize the appearance of the annotation views
+//        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+//            if annotation is MKUserLocation {
+//                // Use the default blue dot for the user's current location
+//                return nil
+//            }
+//
+//            let annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "pin")
+//            annotationView.pinTintColor = UIColor.blue
+//            annotationView.canShowCallout = true
+//            return annotationView
+       // }
     }
 }
 

@@ -5,6 +5,8 @@
 //  Created by Jad Charbatji on 3/22/23.
 //
 
+// Whole list on the second page
+
 import SwiftUI
 import Combine
 import Foundation

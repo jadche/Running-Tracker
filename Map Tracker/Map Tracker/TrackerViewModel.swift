@@ -31,6 +31,7 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func startTracking() {
+        print("startTracking() function called")
         locationManager.requestWhenInUseAuthorization()
         currentRoute = Route(coordinates: [], distance: 0, duration: 0, timestamp: Date())
         trackingStartTime = Date()
@@ -59,19 +60,10 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
             let duration = Date().timeIntervalSince(startTime)
             let newRoute = Route(coordinates: route.coordinates, distance: statistics.distance, duration: duration, timestamp: Date())
             routes.append(newRoute)
+            print("Routessss", routes)
 //            saveRoute(newRoute)
             currentRoute = nil
             trackingStartTime = nil
-        }
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.last {
-            currentLocation = location
-            
-            if tracking {
-                currentRoute?.coordinates.append(location)
-            }
         }
     }
     
@@ -85,6 +77,19 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
             break
         }
     }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.last {
+            currentLocation = location
+           // print("User's location: \(location)")
+            
+            if tracking {
+                currentRoute?.coordinates.append(location)
+            }
+        }
+    }
+    
+
     func calculateStatistics(for route: Route) -> (distance: CLLocationDistance, duration: TimeInterval) {
         let distance = zip(route.coordinates, route.coordinates.dropFirst()).reduce(0) { result, pair in
             let (location1, location2) = pair
