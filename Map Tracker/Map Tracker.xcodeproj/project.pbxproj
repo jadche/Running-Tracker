@@ -31,6 +31,7 @@
 		7CD40F5629CA7DF700DF8059 /* RouteListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteListView.swift; sourceTree = "<group>"; };
 		7CD40F5829CA7E1400DF8059 /* RouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteView.swift; sourceTree = "<group>"; };
 		7CD40F5A29CA7E3000DF8059 /* RouteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteViewModel.swift; sourceTree = "<group>"; };
+		7CD40F5C29CA803B00DF8059 /* Map-Tracker-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Map-Tracker-Info.plist"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +64,7 @@
 		3A00251A29CA5B7E0014649F /* Map Tracker */ = {
 			isa = PBXGroup;
 			children = (
+				7CD40F5C29CA803B00DF8059 /* Map-Tracker-Info.plist */,
 				3A00251B29CA5B7E0014649F /* Map_TrackerApp.swift */,
 				3A00251D29CA5B7E0014649F /* ContentView.swift */,
 				3A00251F29CA5B7F0014649F /* Assets.xcassets */,
@@ -293,6 +295,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Map Tracker/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Map-Tracker-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -321,6 +324,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Map Tracker/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Map-Tracker-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

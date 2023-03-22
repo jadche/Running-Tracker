@@ -9,11 +9,7 @@ import SwiftUI
 import MapKit
 
 struct MapView: UIViewRepresentable {
-    //It's used to display the user's location on the map.
-    @Binding var locationManager: CLLocationManager
-    // contains the recorded route's coordinates and is used to create the polyline overlay.
-    @Binding var route: [CLLocationCoordinate2D]
-    @Binding var tracking: Bool
+    var route: [CLLocationCoordinate2D]
 
     //Creates an instance of 'MKMapView', sets its delegate to the coordinator and returns it.
     func makeUIView(context: Context) -> MKMapView {
@@ -22,14 +18,12 @@ struct MapView: UIViewRepresentable {
         return mapView
     }
 
-    // Updates the map view when any of the bindings change
-    // If tracking is false, it removes all existing overlays, creates a new polyline with the route's coordinates, and adds it as an overlay to the map view.
+    // Updates the map view when the route binding changes
+    // It removes all existing overlays, creates a new polyline with the route's coordinates, and adds it as an overlay to the map view.
     func updateUIView(_ uiView: MKMapView, context: Context) {
-        if !tracking {
-            uiView.removeOverlays(uiView.overlays)
-            let polyline = MKPolyline(coordinates: route, count: route.count)
-            uiView.addOverlay(polyline)
-        }
+        uiView.removeOverlays(uiView.overlays)
+        let polyline = MKPolyline(coordinates: route, count: route.count)
+        uiView.addOverlay(polyline)
     }
 
     // Creates an instance of the coordinator class and returns it
@@ -57,4 +51,3 @@ struct MapView: UIViewRepresentable {
         }
     }
 }
-

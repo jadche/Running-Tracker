@@ -14,7 +14,7 @@ struct RouteView: View {
 
     var body: some View {
         VStack {
-            MapView(coordinates: route.coordinates)
+            MapView(route: route.coordinates.map { $0.coordinate })
             Text("Distance: \(String(format: "%.2f", route.distance)) meters")
             Text("Duration: \(String(format: "%.2f", route.duration)) seconds")
         }
