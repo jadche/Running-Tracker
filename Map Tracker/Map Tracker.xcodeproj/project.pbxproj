@@ -12,6 +12,8 @@
 		3A00252329CA5B7F0014649F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3A00252229CA5B7F0014649F /* Preview Assets.xcassets */; };
 		7C15DEA829CA668B0009A453 /* TrackerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C15DEA629CA65EA0009A453 /* TrackerViewModel.swift */; };
 		7C15DEA929CA66940009A453 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A00251D29CA5B7E0014649F /* ContentView.swift */; };
+		7C98B54529CA973E005E39F9 /* RouteModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7C98B54329CA973E005E39F9 /* RouteModel.xcdatamodeld */; };
+		7C98B54729CA9824005E39F9 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C98B54629CA9824005E39F9 /* CoreDataManager.swift */; };
 		7CD40F5329CA7DC700DF8059 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CD40F5229CA7DC700DF8059 /* MapView.swift */; };
 		7CD40F5529CA7DDC00DF8059 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CD40F5429CA7DDC00DF8059 /* Route.swift */; };
 		7CD40F5729CA7DF700DF8059 /* RouteListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CD40F5629CA7DF700DF8059 /* RouteListView.swift */; };
@@ -26,6 +28,8 @@
 		3A00251F29CA5B7F0014649F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3A00252229CA5B7F0014649F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		7C15DEA629CA65EA0009A453 /* TrackerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerViewModel.swift; sourceTree = "<group>"; };
+		7C98B54429CA973E005E39F9 /* RouteModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = RouteModel.xcdatamodel; sourceTree = "<group>"; };
+		7C98B54629CA9824005E39F9 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		7CD40F5229CA7DC700DF8059 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		7CD40F5429CA7DDC00DF8059 /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		7CD40F5629CA7DF700DF8059 /* RouteListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteListView.swift; sourceTree = "<group>"; };
@@ -48,6 +52,7 @@
 		3A00250F29CA5B7E0014649F = {
 			isa = PBXGroup;
 			children = (
+				7C98B54329CA973E005E39F9 /* RouteModel.xcdatamodeld */,
 				3A00251A29CA5B7E0014649F /* Map Tracker */,
 				3A00251929CA5B7E0014649F /* Products */,
 			);
@@ -75,6 +80,7 @@
 				7CD40F5629CA7DF700DF8059 /* RouteListView.swift */,
 				7CD40F5829CA7E1400DF8059 /* RouteView.swift */,
 				7CD40F5A29CA7E3000DF8059 /* RouteViewModel.swift */,
+				7C98B54629CA9824005E39F9 /* CoreDataManager.swift */,
 			);
 			path = "Map Tracker";
 			sourceTree = "<group>";
@@ -162,8 +168,10 @@
 				7CD40F5B29CA7E3000DF8059 /* RouteViewModel.swift in Sources */,
 				7CD40F5329CA7DC700DF8059 /* MapView.swift in Sources */,
 				7C15DEA829CA668B0009A453 /* TrackerViewModel.swift in Sources */,
+				7C98B54529CA973E005E39F9 /* RouteModel.xcdatamodeld in Sources */,
 				7CD40F5529CA7DDC00DF8059 /* Route.swift in Sources */,
 				7CD40F5729CA7DF700DF8059 /* RouteListView.swift in Sources */,
+				7C98B54729CA9824005E39F9 /* CoreDataManager.swift in Sources */,
 				7C15DEA929CA66940009A453 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -365,6 +373,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		7C98B54329CA973E005E39F9 /* RouteModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				7C98B54429CA973E005E39F9 /* RouteModel.xcdatamodel */,
+			);
+			currentVersion = 7C98B54429CA973E005E39F9 /* RouteModel.xcdatamodel */;
+			path = RouteModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 3A00251029CA5B7E0014649F /* Project object */;
 }

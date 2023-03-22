@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MapKit
+import CoreLocation
 
 struct MapView: UIViewRepresentable {
     var route: [CLLocationCoordinate2D]
@@ -24,7 +25,13 @@ struct MapView: UIViewRepresentable {
         uiView.removeOverlays(uiView.overlays)
         let polyline = MKPolyline(coordinates: route, count: route.count)
         uiView.addOverlay(polyline)
+        
+        // Zoom and center the map on the actual route
+        let mapRect = polyline.boundingMapRect
+        let edgePadding = UIEdgeInsets(top: 50, left: 50, bottom: 50, right: 50)
+        uiView.setVisibleMapRect(mapRect, edgePadding: edgePadding, animated: true)
     }
+
 
     // Creates an instance of the coordinator class and returns it
     func makeCoordinator() -> Coordinator {

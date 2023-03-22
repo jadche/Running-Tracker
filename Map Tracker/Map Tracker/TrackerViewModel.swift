@@ -9,6 +9,7 @@ import SwiftUI
 import Foundation
 import Combine
 import CoreLocation
+import CoreData
 
 
 class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
@@ -16,6 +17,7 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var currentLocation: CLLocation?
     @Published var routes: [Route] = []
     private var currentRoute: Route?
+    private var trackingStartTime: Date?
     
     private let locationManager = CLLocationManager()
     
@@ -25,20 +27,26 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.activityType = .fitness
         locationManager.allowsBackgroundLocationUpdates = true
+//        loadRoutes()
     }
     
     func startTracking() {
         locationManager.requestWhenInUseAuthorization()
-        currentRoute = Route(coordinates: [], distance: 0, duration: 0)
+        currentRoute = Route(coordinates: [], distance: 0, duration: 0, timestamp: Date())
+        trackingStartTime = Date()
         locationManager.startUpdatingLocation()
     }
     
     func stopTracking() {
         locationManager.stopUpdatingLocation()
-        if let route = currentRoute {
+        if let route = currentRoute, let startTime = trackingStartTime {
             let statistics = calculateStatistics(for: route)
-            routes.append(Route(coordinates: route.coordinates, distance: statistics.distance, duration: statistics.duration))
+            let duration = Date().timeIntervalSince(startTime)
+            let newRoute = Route(coordinates: route.coordinates, distance: statistics.distance, duration: duration, timestamp: Date())
+            routes.append(newRoute)
+//            saveRoute(newRoute)
             currentRoute = nil
+            trackingStartTime = nil
         }
     }
     
@@ -63,16 +71,48 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
     func calculateStatistics(for route: Route) -> (distance: CLLocationDistance, duration: TimeInterval) {
-        let distance = route.coordinates.reduce(CLLocationDistance(0)) { result, location in
-            let previousLocationIndex = route.coordinates.firstIndex(of: location)! - 1
-            guard previousLocationIndex >= 0 else { return result }
-            let previousLocation = route.coordinates[previousLocationIndex]
-            return result + location.distance(from: previousLocation)
+        let distance = zip(route.coordinates, route.coordinates.dropFirst()).reduce(0) { result, pair in
+            let (location1, location2) = pair
+            return result + location1.distance(from: location2)
         }
-
+        
         let duration = route.coordinates.last?.timestamp.timeIntervalSince(route.coordinates.first!.timestamp) ?? 0
-
+        
         return (distance, duration)
     }
-
+    func generateMockData() -> [CLLocation] {
+        let coordinates = [
+            CLLocationCoordinate2D(latitude: 37.74, longitude: 32.3),
+            CLLocationCoordinate2D(latitude: 37.73, longitude: 32.4)
+        ]
+        let timestamp = Date()
+        return coordinates.map { CLLocation(coordinate: $0, altitude: 0, horizontalAccuracy: 0, verticalAccuracy: 0, timestamp: timestamp) }
+    }
+    
+//    func saveRoute(_ route: Route) {
+//        let routeEntity = RouteEntity(context: CoreDataManager.shared.context)
+//        routeEntity.coordinatesData = try? NSKeyedArchiver.archivedData(withRootObject: route.coordinates, requiringSecureCoding: false)
+//        routeEntity.distance = route.distance
+//        routeEntity.duration = route.duration
+//        routeEntity.timestamp = route.timestamp
+//        CoreDataManager.shared.saveContext()
+//    }
+//
+//    func loadRoutes() {
+//        let fetchRequest: NSFetchRequest<RouteEntity> = RouteEntity.fetchRequest()
+//
+//        do {
+//            let routeEntities = try CoreDataManager.shared.context.fetch(fetchRequest)
+//            routes = routeEntities.compactMap { routeEntity in
+//                guard let coordinatesData = routeEntity.coordinatesData,
+//                      let coordinates = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(coordinatesData) as? [CLLocation] else {
+//                    return nil
+//                }
+//                return Route(coordinates: coordinates, distance: routeEntity.distance, duration: routeEntity.duration, timestamp: routeEntity.timestamp)
+//            }
+//
+//        } catch {
+//            print("Error loading routes: \(error)")
+//        }
+//    }
 }

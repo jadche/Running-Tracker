@@ -13,4 +13,5 @@ struct Route: Identifiable {
     var coordinates: [CLLocation]
     var distance: CLLocationDistance
     var duration: TimeInterval
+    var timestamp: Date
 }
