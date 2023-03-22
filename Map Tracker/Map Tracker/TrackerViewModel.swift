@@ -37,6 +37,21 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationManager.startUpdatingLocation()
     }
     
+    // added always location
+//    func startTracking() {
+//        locationManager.requestWhenInUseAuthorization()
+//
+//        if CLLocationManager.authorizationStatus() == .authorizedAlways {
+//            locationManager.startUpdatingLocation()
+//            currentRoute = Route(coordinates: [], distance: 0, duration: 0, timestamp: Date())
+//            trackingStartTime = Date()
+//            tracking = true
+//        } else {
+//            locationManager.requestAlwaysAuthorization()
+//        }
+//    }
+
+    
     func stopTracking() {
         locationManager.stopUpdatingLocation()
         if let route = currentRoute, let startTime = trackingStartTime {
