@@ -1,33 +1,50 @@
+//
+//  ContentView.swift
+//  Map Tracker
+//
+//  Created by Faisal Atif on 2023-03-21.
+//
 import SwiftUI
 
 struct ContentView: View {
     @StateObject private var viewModel = TrackerViewModel()
 
     var body: some View {
-        ZStack {
-            if viewModel.tracking {
-                Color.red
-            } else {
-                Color.green
-            }
-            
-            Button(action: {
-                viewModel.tracking.toggle()
-            }) {
-                VStack {
+        NavigationView {
+            ZStack {
+                if viewModel.tracking {
+                    Color.red
+                } else {
+                    Color.green
+                }
+
+                Button(action: {
+                    viewModel.tracking.toggle()
                     if viewModel.tracking {
-                        Text("Stop Tracking")
-                            .font(.largeTitle)
-                            .foregroundColor(.white)
+                        viewModel.startTracking()
                     } else {
-                        Text("Start Tracking")
-                            .font(.largeTitle)
-                            .foregroundColor(.white)
+                        viewModel.stopTracking()
+                    }
+                }) {
+                    VStack {
+                        if viewModel.tracking {
+                            Text("Stop Tracking")
+                                .font(.largeTitle)
+                                .foregroundColor(.white)
+                        } else {
+                            Text("Start Tracking")
+                                .font(.largeTitle)
+                                .foregroundColor(.white)
+                        }
                     }
                 }
             }
+            .edgesIgnoringSafeArea(.all)
+            .navigationTitle("Map Tracker")
+            .navigationBarItems(trailing: NavigationLink(destination: RouteListView(trackerViewModel: viewModel)) {
+                Text("View Past Routes")
+            })
         }
-        .edgesIgnoringSafeArea(.all)
     }
 }
 

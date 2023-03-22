@@ -12,6 +12,11 @@
 		3A00252329CA5B7F0014649F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3A00252229CA5B7F0014649F /* Preview Assets.xcassets */; };
 		7C15DEA829CA668B0009A453 /* TrackerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C15DEA629CA65EA0009A453 /* TrackerViewModel.swift */; };
 		7C15DEA929CA66940009A453 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A00251D29CA5B7E0014649F /* ContentView.swift */; };
+		7CD40F5329CA7DC700DF8059 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CD40F5229CA7DC700DF8059 /* MapView.swift */; };
+		7CD40F5529CA7DDC00DF8059 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CD40F5429CA7DDC00DF8059 /* Route.swift */; };
+		7CD40F5729CA7DF700DF8059 /* RouteListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CD40F5629CA7DF700DF8059 /* RouteListView.swift */; };
+		7CD40F5929CA7E1400DF8059 /* RouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CD40F5829CA7E1400DF8059 /* RouteView.swift */; };
+		7CD40F5B29CA7E3000DF8059 /* RouteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CD40F5A29CA7E3000DF8059 /* RouteViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +26,11 @@
 		3A00251F29CA5B7F0014649F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3A00252229CA5B7F0014649F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		7C15DEA629CA65EA0009A453 /* TrackerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerViewModel.swift; sourceTree = "<group>"; };
+		7CD40F5229CA7DC700DF8059 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		7CD40F5429CA7DDC00DF8059 /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
+		7CD40F5629CA7DF700DF8059 /* RouteListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteListView.swift; sourceTree = "<group>"; };
+		7CD40F5829CA7E1400DF8059 /* RouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteView.swift; sourceTree = "<group>"; };
+		7CD40F5A29CA7E3000DF8059 /* RouteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +68,11 @@
 				3A00251F29CA5B7F0014649F /* Assets.xcassets */,
 				3A00252129CA5B7F0014649F /* Preview Content */,
 				7C15DEA629CA65EA0009A453 /* TrackerViewModel.swift */,
+				7CD40F5229CA7DC700DF8059 /* MapView.swift */,
+				7CD40F5429CA7DDC00DF8059 /* Route.swift */,
+				7CD40F5629CA7DF700DF8059 /* RouteListView.swift */,
+				7CD40F5829CA7E1400DF8059 /* RouteView.swift */,
+				7CD40F5A29CA7E3000DF8059 /* RouteViewModel.swift */,
 			);
 			path = "Map Tracker";
 			sourceTree = "<group>";
@@ -141,7 +156,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				3A00251C29CA5B7E0014649F /* Map_TrackerApp.swift in Sources */,
+				7CD40F5929CA7E1400DF8059 /* RouteView.swift in Sources */,
+				7CD40F5B29CA7E3000DF8059 /* RouteViewModel.swift in Sources */,
+				7CD40F5329CA7DC700DF8059 /* MapView.swift in Sources */,
 				7C15DEA829CA668B0009A453 /* TrackerViewModel.swift in Sources */,
+				7CD40F5529CA7DDC00DF8059 /* Route.swift in Sources */,
+				7CD40F5729CA7DF700DF8059 /* RouteListView.swift in Sources */,
 				7C15DEA929CA66940009A453 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
