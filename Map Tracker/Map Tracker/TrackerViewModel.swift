@@ -19,11 +19,16 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     private var currentRoute: Route?
     private var trackingStartTime: Date?
     
+    // Improve Accuracy 3 - Calculate moving average
+    let movingAverageWindowSize = 5
+    var recentLocations: [CLLocation] = []
+    
     private let locationManager = CLLocationManager()
     
     override init() {
         super.init()
         locationManager.delegate = self
+        //Improve acuracy - 1 set best accuracy
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.activityType = .fitness
         locationManager.allowsBackgroundLocationUpdates = true
@@ -79,16 +84,45 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.last {
-            currentLocation = location
-           // print("User's location: \(location)")
-            
-            if tracking {
-                currentRoute?.coordinates.append(location)
-            }
+        // Improve Accuracy 2 - Discard locations with an accuracy worse than 20 meters
+        guard let location = locations.last, location.horizontalAccuracy <= 20 else { return }
+        
+        // Improve Accuracy 3 - Uses the calculated moving average instead of the raw data
+        // Data passes by a 'averageLocation' function first
+        recentLocations.append(location)
+        if recentLocations.count > movingAverageWindowSize {
+            recentLocations.removeFirst()
         }
+
+        let smoothedLocation = averageLocation(recentLocations)
+        
+        // Update the route with the smoothed location
+        if tracking {
+//            self.route.append(smoothedLocation.coordinate)
+            currentRoute?.coordinates.append(smoothedLocation)
+        }
+        
+//        if let location = locations.last {
+//            currentLocation = location
+//           // print("User's location: \(location)")
+//
+//            if tracking {
+//                currentRoute?.coordinates.append(location)
+//            }
+//        }
     }
     
+    // Improve Accuracy 3 - calculating moving average for the location for smoothing
+    func averageLocation(_ locations: [CLLocation]) -> CLLocation {
+        let totalLatitude = locations.reduce(0) { $0 + $1.coordinate.latitude }
+        let totalLongitude = locations.reduce(0) { $0 + $1.coordinate.longitude }
+        
+        let averageLatitude = totalLatitude / Double(locations.count)
+        let averageLongitude = totalLongitude / Double(locations.count)
+        
+        return CLLocation(latitude: averageLatitude, longitude: averageLongitude)
+    }
+
 
     func calculateStatistics(for route: Route) -> (distance: CLLocationDistance, duration: TimeInterval) {
         let distance = zip(route.coordinates, route.coordinates.dropFirst()).reduce(0) { result, pair in
