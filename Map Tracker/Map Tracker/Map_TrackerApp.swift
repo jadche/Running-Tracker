@@ -6,9 +6,13 @@
 //
 
 import SwiftUI
+import Firebase
+import UIKit
 
 @main
 struct Map_TrackerApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
