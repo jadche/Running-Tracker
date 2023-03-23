@@ -10,6 +10,8 @@ import Foundation
 import Combine
 import CoreLocation
 import CoreData
+import FirebaseFirestore
+import FirebaseAuth
 
 
 class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
@@ -17,6 +19,14 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var currentLocation: CLLocation?
     @Published var routes: [Route] = []
     private var currentRoute: Route?
+
+    //private var trackingStartTime: Date?
+    private let firebaseManager = FirebaseManager()
+    private let db = Firestore.firestore()
+//    @objc func saveRoutesBeforeTerminate() {
+//        saveRoutesToFirestore()
+//    }
+    
     //Changed it to a public variable to be able to access it from ContentView
     @Published var trackingStartTime: Date?
     // To keep track of the timer every second for the main page
@@ -38,7 +48,9 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.activityType = .fitness
         locationManager.allowsBackgroundLocationUpdates = true
-//        loadRoutes()
+        loadRoutes()
+//        NotificationCenter.default.addObserver(self, selector: #selector(saveRoutesBeforeTerminate), name: UIApplication.willTerminateNotification, object: nil)
+
     }
     
     func startTracking() {
@@ -71,7 +83,6 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
 //        }
 //    }
 
-    
     func stopTracking() {
         locationManager.stopUpdatingLocation()
         if let route = currentRoute, let startTime = trackingStartTime {
@@ -79,6 +90,15 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
             let duration = Date().timeIntervalSince(startTime)
             let newRoute = Route(coordinates: route.coordinates, distance: statistics.distance, duration: duration, timestamp: Date())
             routes.append(newRoute)
+//      save to firestore
+            firebaseManager.saveRouteToFirestore(route: newRoute) { result in
+                        switch result {
+                        case .success:
+                            print("Route added successfully")
+                        case .failure(let error):
+                            print("Error adding route: \(error)")
+                        }
+                    }
             print("Routessss", routes)
 //            saveRoute(newRoute)
             currentRoute = nil
@@ -101,7 +121,26 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
     
+//    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+//        if let location = locations.last {
+//            currentLocation = location
+//           // print("User's location: \(location)")
+//
+//            if tracking {
+//                currentRoute?.coordinates.append(location.toCodableCLLocation())
+//            }
+//        }
+//    }
+    
+//  new route struct location manager
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.last {
+            currentLocation = location
+
+            if tracking {
+                let coordinate = Coordinate(from: location)
+                currentRoute?.coordinates.append(coordinate)
+            }
         // Improve Accuracy 2 - Discard locations with an accuracy worse than 20 meters
         guard let location = locations.last, location.horizontalAccuracy <= 20 else { return }
         
@@ -142,17 +181,51 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
 
 
+//    func calculateStatistics(for route: Route) -> (distance: CLLocationDistance, duration: TimeInterval) {
+//        let distance = zip(route.coordinates, route.coordinates.dropFirst()).reduce(0) { result, pair in
+//            let (location1, location2) = pair
+//            return result + location1.distance(from: location2)
+//        }
+//
+//        let duration = route.coordinates.last?.timestamp.timeIntervalSince(route.coordinates.first!.timestamp) ?? 0
+//
+//        return (distance, duration)
+//    }
+    
+    
+//  converting coordinates before calculating stats
     func calculateStatistics(for route: Route) -> (distance: CLLocationDistance, duration: TimeInterval) {
-        let distance = zip(route.coordinates, route.coordinates.dropFirst()).reduce(0) { result, pair in
+        let locations = route.coordinates.map { CLLocation(latitude: $0.latitude, longitude: $0.longitude) }
+
+        let distance = zip(locations, locations.dropFirst()).reduce(0) { result, pair in
             let (location1, location2) = pair
             return result + location1.distance(from: location2)
         }
-        
-        let duration = route.coordinates.last?.timestamp.timeIntervalSince(route.coordinates.first!.timestamp) ?? 0
-        
+
+        let duration = route.timestamp.timeIntervalSince(route.timestamp)
+
         return (distance, duration)
     }
     
+    func loadRoutes() {
+        guard let user = Auth.auth().currentUser else {
+            print("User not signed in")
+            return
+        }
+
+        print("Signed in user ID: \(user.uid)")
+
+        firebaseManager.fetchRoutes { result in
+            switch result {
+            case .success(let routes):
+                DispatchQueue.main.async {
+                    self.routes = routes
+                    print("Fetched routes: \(routes)")
+                }
+            case .failure(let error):
+                print("Error loading routes: \(error)")
+            }
+        }
     // Change seconds into a human readble form with hours or minutes when needed
     func formatDuration(_ duration: TimeInterval) -> String {
         let hours = Int(duration) / 3600
@@ -173,31 +246,20 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         let timestamp = Date()
         return coordinates.map { CLLocation(coordinate: $0, altitude: 0, horizontalAccuracy: 0, verticalAccuracy: 0, timestamp: timestamp) }
     }
+
+
+    //'saveRoutesToFirestore' method here iterates through the recorded routes and calls the 'saveRouteToFirestore' method of the 'FirebaseManager' to save each one to the database.
     
-//    func saveRoute(_ route: Route) {
-//        let routeEntity = RouteEntity(context: CoreDataManager.shared.context)
-//        routeEntity.coordinatesData = try? NSKeyedArchiver.archivedData(withRootObject: route.coordinates, requiringSecureCoding: false)
-//        routeEntity.distance = route.distance
-//        routeEntity.duration = route.duration
-//        routeEntity.timestamp = route.timestamp
-//        CoreDataManager.shared.saveContext()
-//    }
-//
-//    func loadRoutes() {
-//        let fetchRequest: NSFetchRequest<RouteEntity> = RouteEntity.fetchRequest()
-//
-//        do {
-//            let routeEntities = try CoreDataManager.shared.context.fetch(fetchRequest)
-//            routes = routeEntities.compactMap { routeEntity in
-//                guard let coordinatesData = routeEntity.coordinatesData,
-//                      let coordinates = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(coordinatesData) as? [CLLocation] else {
-//                    return nil
-//                }
-//                return Route(coordinates: coordinates, distance: routeEntity.distance, duration: routeEntity.duration, timestamp: routeEntity.timestamp)
-//            }
-//
-//        } catch {
-//            print("Error loading routes: \(error)")
-//        }
-//    }
+    func saveRoutesToFirestore() {
+        for route in routes {
+            firebaseManager.saveRouteToFirestore(route: route) { result in
+                switch result {
+                case .success:
+                    print("Route added successfully")
+                case .failure(let error):
+                    print("Error adding route: \(error)")
+                }
+            }
+        }
+    }
 }
