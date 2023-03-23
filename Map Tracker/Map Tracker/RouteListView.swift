@@ -15,11 +15,11 @@ struct RouteListView: View {
     @ObservedObject var trackerViewModel: TrackerViewModel
 
     var body: some View {
-        List(trackerViewModel.routes) { route in
+        List(trackerViewModel.routes.reversed()) { route in
             NavigationLink(destination: RouteView(route: route)) {
                 VStack(alignment: .leading) {
                     Text("Distance: \(route.distance, specifier: "%.2f") meters")
-                    Text("Duration: \(route.duration, specifier: "%.2f") seconds")
+                                        Text("Duration: \(trackerViewModel.formatDuration(route.duration))")
                 }
             }
         }

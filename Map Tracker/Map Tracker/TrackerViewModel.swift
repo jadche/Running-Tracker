@@ -17,7 +17,13 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var currentLocation: CLLocation?
     @Published var routes: [Route] = []
     private var currentRoute: Route?
-    private var trackingStartTime: Date?
+    //Changed it to a public variable to be able to access it from ContentView
+    @Published var trackingStartTime: Date?
+    // To keep track of the timer every second for the main page
+    // Needed since the route duration is not calculated in real time
+    @Published var elapsedTime: TimeInterval = 0
+    private var timer: Timer?
+
     
     // Improve Accuracy 3 - Calculate moving average
     let movingAverageWindowSize = 5
@@ -41,6 +47,14 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         currentRoute = Route(coordinates: [], distance: 0, duration: 0, timestamp: Date())
         trackingStartTime = Date()
         locationManager.startUpdatingLocation()
+        
+        // Start the timer
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            if let startTime = self.trackingStartTime {
+                self.elapsedTime = Date().timeIntervalSince(startTime)
+            }
+        }
+        
     }
     
     // added always location
@@ -70,6 +84,10 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
             currentRoute = nil
             trackingStartTime = nil
         }
+        // Stop the timer and reset elapsedTime
+        timer?.invalidate()
+        timer = nil
+        elapsedTime = 0
     }
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
@@ -133,6 +151,19 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         let duration = route.coordinates.last?.timestamp.timeIntervalSince(route.coordinates.first!.timestamp) ?? 0
         
         return (distance, duration)
+    }
+    
+    // Change seconds into a human readble form with hours or minutes when needed
+    func formatDuration(_ duration: TimeInterval) -> String {
+        let hours = Int(duration) / 3600
+        let minutes = (Int(duration) % 3600) / 60
+        let seconds = Int(duration) % 60
+
+        if hours > 0 {
+            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            return String(format: "%02d:%02d", minutes, seconds)
+        }
     }
     func generateMockData() -> [CLLocation] {
         let coordinates = [
