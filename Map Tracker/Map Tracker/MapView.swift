@@ -166,6 +166,10 @@ struct MapView: UIViewRepresentable {
             endMarker.title = "End"
             uiView.addAnnotation(endMarker)
         }
+    // Zoom and center the map on the route
+        let mapRect = polyline.boundingMapRect
+        let edgePadding = UIEdgeInsets(top: 50, left: 50, bottom: 50, right: 50)
+        uiView.setVisibleMapRect(mapRect, edgePadding: edgePadding, animated: true)
     }
 
     // Creates an instance of the coordinator class and returns it
