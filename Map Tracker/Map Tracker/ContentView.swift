@@ -4,6 +4,7 @@
 //
 //  Created by Faisal Atif on 2023-03-21.
 //
+
 import SwiftUI
 
 struct ContentView: View {
@@ -18,23 +19,32 @@ struct ContentView: View {
                     Color.green
                 }
 
-                Button(action: {
-                    viewModel.tracking.toggle()
+                VStack {
                     if viewModel.tracking {
-                        viewModel.startTracking()
-                    } else {
-                        viewModel.stopTracking()
-                    }
-                }) {
-                    VStack {
+                                            Text("\(viewModel.formatDuration(viewModel.elapsedTime))")
+                                                .font(.system(size: 40, weight: .bold))
+                                                .foregroundColor(.white)
+                                                .padding(.bottom, 20)
+                                        }
+
+                    Button(action: {
+                        viewModel.tracking.toggle()
                         if viewModel.tracking {
-                            Text("Stop Tracking")
-                                .font(.largeTitle)
-                                .foregroundColor(.white)
+                            viewModel.startTracking()
                         } else {
-                            Text("Start Tracking")
-                                .font(.largeTitle)
-                                .foregroundColor(.white)
+                            viewModel.stopTracking()
+                        }
+                    }) {
+                        VStack {
+                            if viewModel.tracking {
+                                Text("Stop Tracking")
+                                    .font(.largeTitle)
+                                    .foregroundColor(.white)
+                            } else {
+                                Text("Start Tracking")
+                                    .font(.largeTitle)
+                                    .foregroundColor(.white)
+                            }
                         }
                     }
                 }
