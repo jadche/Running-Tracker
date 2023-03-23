@@ -10,6 +10,8 @@ import Foundation
 import Combine
 import CoreLocation
 import CoreData
+import FirebaseFirestore
+import FirebaseAuth
 
 
 class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
@@ -18,7 +20,11 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var routes: [Route] = []
     private var currentRoute: Route?
     private var trackingStartTime: Date?
-    
+    private let firebaseManager = FirebaseManager()
+    private let db = Firestore.firestore()
+//    @objc func saveRoutesBeforeTerminate() {
+//        saveRoutesToFirestore()
+//    }
     private let locationManager = CLLocationManager()
     
     override init() {
@@ -27,7 +33,9 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.activityType = .fitness
         locationManager.allowsBackgroundLocationUpdates = true
-//        loadRoutes()
+        loadRoutes()
+//        NotificationCenter.default.addObserver(self, selector: #selector(saveRoutesBeforeTerminate), name: UIApplication.willTerminateNotification, object: nil)
+
     }
     
     func startTracking() {
@@ -52,7 +60,6 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
 //        }
 //    }
 
-    
     func stopTracking() {
         locationManager.stopUpdatingLocation()
         if let route = currentRoute, let startTime = trackingStartTime {
@@ -60,6 +67,15 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
             let duration = Date().timeIntervalSince(startTime)
             let newRoute = Route(coordinates: route.coordinates, distance: statistics.distance, duration: duration, timestamp: Date())
             routes.append(newRoute)
+//      save to firestore
+            firebaseManager.saveRouteToFirestore(route: newRoute) { result in
+                        switch result {
+                        case .success:
+                            print("Route added successfully")
+                        case .failure(let error):
+                            print("Error adding route: \(error)")
+                        }
+                    }
             print("Routessss", routes)
 //            saveRoute(newRoute)
             currentRoute = nil
@@ -78,61 +94,89 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
     
+//    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+//        if let location = locations.last {
+//            currentLocation = location
+//           // print("User's location: \(location)")
+//
+//            if tracking {
+//                currentRoute?.coordinates.append(location.toCodableCLLocation())
+//            }
+//        }
+//    }
+    
+//  new route struct location manager
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.last {
             currentLocation = location
-           // print("User's location: \(location)")
-            
+
             if tracking {
-                currentRoute?.coordinates.append(location)
+                let coordinate = Coordinate(from: location)
+                currentRoute?.coordinates.append(coordinate)
             }
         }
     }
-    
 
+//    func calculateStatistics(for route: Route) -> (distance: CLLocationDistance, duration: TimeInterval) {
+//        let distance = zip(route.coordinates, route.coordinates.dropFirst()).reduce(0) { result, pair in
+//            let (location1, location2) = pair
+//            return result + location1.distance(from: location2)
+//        }
+//
+//        let duration = route.coordinates.last?.timestamp.timeIntervalSince(route.coordinates.first!.timestamp) ?? 0
+//
+//        return (distance, duration)
+//    }
+    
+    
+//  converting coordinates before calculating stats
     func calculateStatistics(for route: Route) -> (distance: CLLocationDistance, duration: TimeInterval) {
-        let distance = zip(route.coordinates, route.coordinates.dropFirst()).reduce(0) { result, pair in
+        let locations = route.coordinates.map { CLLocation(latitude: $0.latitude, longitude: $0.longitude) }
+
+        let distance = zip(locations, locations.dropFirst()).reduce(0) { result, pair in
             let (location1, location2) = pair
             return result + location1.distance(from: location2)
         }
-        
-        let duration = route.coordinates.last?.timestamp.timeIntervalSince(route.coordinates.first!.timestamp) ?? 0
-        
+
+        let duration = route.timestamp.timeIntervalSince(route.timestamp)
+
         return (distance, duration)
     }
-    func generateMockData() -> [CLLocation] {
-        let coordinates = [
-            CLLocationCoordinate2D(latitude: 37.74, longitude: 32.3),
-            CLLocationCoordinate2D(latitude: 37.73, longitude: 32.4)
-        ]
-        let timestamp = Date()
-        return coordinates.map { CLLocation(coordinate: $0, altitude: 0, horizontalAccuracy: 0, verticalAccuracy: 0, timestamp: timestamp) }
-    }
     
-//    func saveRoute(_ route: Route) {
-//        let routeEntity = RouteEntity(context: CoreDataManager.shared.context)
-//        routeEntity.coordinatesData = try? NSKeyedArchiver.archivedData(withRootObject: route.coordinates, requiringSecureCoding: false)
-//        routeEntity.distance = route.distance
-//        routeEntity.duration = route.duration
-//        routeEntity.timestamp = route.timestamp
-//        CoreDataManager.shared.saveContext()
-//    }
-//
-//    func loadRoutes() {
-//        let fetchRequest: NSFetchRequest<RouteEntity> = RouteEntity.fetchRequest()
-//
-//        do {
-//            let routeEntities = try CoreDataManager.shared.context.fetch(fetchRequest)
-//            routes = routeEntities.compactMap { routeEntity in
-//                guard let coordinatesData = routeEntity.coordinatesData,
-//                      let coordinates = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(coordinatesData) as? [CLLocation] else {
-//                    return nil
-//                }
-//                return Route(coordinates: coordinates, distance: routeEntity.distance, duration: routeEntity.duration, timestamp: routeEntity.timestamp)
-//            }
-//
-//        } catch {
-//            print("Error loading routes: \(error)")
-//        }
-//    }
+    func loadRoutes() {
+        guard let user = Auth.auth().currentUser else {
+            print("User not signed in")
+            return
+        }
+
+        print("Signed in user ID: \(user.uid)")
+
+        firebaseManager.fetchRoutes { result in
+            switch result {
+            case .success(let routes):
+                DispatchQueue.main.async {
+                    self.routes = routes
+                    print("Fetched routes: \(routes)")
+                }
+            case .failure(let error):
+                print("Error loading routes: \(error)")
+            }
+        }
+    }
+
+
+    //'saveRoutesToFirestore' method here iterates through the recorded routes and calls the 'saveRouteToFirestore' method of the 'FirebaseManager' to save each one to the database.
+    
+    func saveRoutesToFirestore() {
+        for route in routes {
+            firebaseManager.saveRouteToFirestore(route: route) { result in
+                switch result {
+                case .success:
+                    print("Route added successfully")
+                case .failure(let error):
+                    print("Error adding route: \(error)")
+                }
+            }
+        }
+    }
 }
