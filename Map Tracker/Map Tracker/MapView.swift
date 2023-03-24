@@ -115,18 +115,7 @@ struct MapView: UIViewRepresentable {
     var route: [CLLocationCoordinate2D]
 
     // Creates an instance of 'MKMapView', sets its delegate to the coordinator and returns it.
-    
-    //replacement bellow
-//    func makeUIView(context: Context) -> MKMapView {
-//        let mapView = MKMapView()
-//        mapView.showsUserLocation = true
-//        mapView.delegate = context.coordinator
-//        // To do change the coor from hard cooded to user's location
-//        let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 70.7749, longitude: -81.4194), latitudinalMeters: 500, longitudinalMeters: 500)
-//        mapView.setRegion(region, animated: false)
-//        return mapView
-//    }
-    
+        
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
         mapView.showsUserLocation = true
@@ -194,19 +183,6 @@ struct MapView: UIViewRepresentable {
             }
             return MKOverlayRenderer(overlay: overlay)
         }
-
-//        // Customize the appearance of the annotation views
-//        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-//            if annotation is MKUserLocation {
-//                // Use the default blue dot for the user's current location
-//                return nil
-//            }
-//
-//            let annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "pin")
-//            annotationView.pinTintColor = UIColor.blue
-//            annotationView.canShowCallout = true
-//            return annotationView
-       // }
     }
 }
 
