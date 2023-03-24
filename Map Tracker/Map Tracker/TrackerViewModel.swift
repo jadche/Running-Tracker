@@ -136,40 +136,41 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.last {
             currentLocation = location
-
+            
             if tracking {
                 let coordinate = Coordinate(from: location)
-                currentRoute?.coordinates.append(coordinate)
+//                currentRoute?.coordinates.append(coordinate)
             }
-        // Improve Accuracy 2 - Discard locations with an accuracy worse than 20 meters
-        guard let location = locations.last, location.horizontalAccuracy <= 20 else { return }
-        
-        // Improve Accuracy 3 - Uses the calculated moving average instead of the raw data
-        // Data passes by a 'averageLocation' function first
-        recentLocations.append(location)
-        if recentLocations.count > movingAverageWindowSize {
-            recentLocations.removeFirst()
+            // Improve Accuracy 2 - Discard locations with an accuracy worse than 20 meters
+            guard let location = locations.last, location.horizontalAccuracy <= 20 else { return }
+            
+            // Improve Accuracy 3 - Uses the calculated moving average instead of the raw data
+            // Data passes by a 'averageLocation' function first
+            recentLocations.append(location)
+            if recentLocations.count > movingAverageWindowSize {
+                recentLocations.removeFirst()
+            }
+            
+            let smoothedLocation = averageLocation(recentLocations)
+            
+            // Update the route with the smoothed location
+            if tracking {
+                //            self.route.append(smoothedLocation.coordinate)
+                currentRoute?.coordinates.append(Coordinate(from: smoothedLocation))
+            }
+            
+            //        if let location = locations.last {
+            //            currentLocation = location
+            //           // print("User's location: \(location)")
+            //
+            //            if tracking {
+            //                currentRoute?.coordinates.append(location)
+            //            }
+            //        }
         }
-
-        let smoothedLocation = averageLocation(recentLocations)
-        
-        // Update the route with the smoothed location
-        if tracking {
-//            self.route.append(smoothedLocation.coordinate)
-            currentRoute?.coordinates.append(smoothedLocation)
-        }
-        
-//        if let location = locations.last {
-//            currentLocation = location
-//           // print("User's location: \(location)")
-//
-//            if tracking {
-//                currentRoute?.coordinates.append(location)
-//            }
-//        }
     }
-    
-    // Improve Accuracy 3 - calculating moving average for the location for smoothing
+        
+        // Improve Accuracy 3 - calculating moving average for the location for smoothing
     func averageLocation(_ locations: [CLLocation]) -> CLLocation {
         let totalLatitude = locations.reduce(0) { $0 + $1.coordinate.latitude }
         let totalLongitude = locations.reduce(0) { $0 + $1.coordinate.longitude }
@@ -179,31 +180,31 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         
         return CLLocation(latitude: averageLatitude, longitude: averageLongitude)
     }
-
-
-//    func calculateStatistics(for route: Route) -> (distance: CLLocationDistance, duration: TimeInterval) {
-//        let distance = zip(route.coordinates, route.coordinates.dropFirst()).reduce(0) { result, pair in
-//            let (location1, location2) = pair
-//            return result + location1.distance(from: location2)
-//        }
-//
-//        let duration = route.coordinates.last?.timestamp.timeIntervalSince(route.coordinates.first!.timestamp) ?? 0
-//
-//        return (distance, duration)
-//    }
     
     
-//  converting coordinates before calculating stats
+    //    func calculateStatistics(for route: Route) -> (distance: CLLocationDistance, duration: TimeInterval) {
+    //        let distance = zip(route.coordinates, route.coordinates.dropFirst()).reduce(0) { result, pair in
+    //            let (location1, location2) = pair
+    //            return result + location1.distance(from: location2)
+    //        }
+    //
+    //        let duration = route.coordinates.last?.timestamp.timeIntervalSince(route.coordinates.first!.timestamp) ?? 0
+    //
+    //        return (distance, duration)
+    //    }
+    
+    
+    //  converting coordinates before calculating stats
     func calculateStatistics(for route: Route) -> (distance: CLLocationDistance, duration: TimeInterval) {
         let locations = route.coordinates.map { CLLocation(latitude: $0.latitude, longitude: $0.longitude) }
-
+        
         let distance = zip(locations, locations.dropFirst()).reduce(0) { result, pair in
             let (location1, location2) = pair
             return result + location1.distance(from: location2)
         }
-
+        
         let duration = route.timestamp.timeIntervalSince(route.timestamp)
-
+        
         return (distance, duration)
     }
     
@@ -212,9 +213,9 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
             print("User not signed in")
             return
         }
-
+        
         print("Signed in user ID: \(user.uid)")
-
+        
         firebaseManager.fetchRoutes { result in
             switch result {
             case .success(let routes):
@@ -226,30 +227,31 @@ class TrackerViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
                 print("Error loading routes: \(error)")
             }
         }
-    // Change seconds into a human readble form with hours or minutes when needed
+    }
+        // Change seconds into a human readble form with hours or minutes when needed
     func formatDuration(_ duration: TimeInterval) -> String {
         let hours = Int(duration) / 3600
         let minutes = (Int(duration) % 3600) / 60
         let seconds = Int(duration) % 60
-
+        
         if hours > 0 {
             return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
         } else {
             return String(format: "%02d:%02d", minutes, seconds)
         }
     }
-    func generateMockData() -> [CLLocation] {
-        let coordinates = [
-            CLLocationCoordinate2D(latitude: 37.74, longitude: 32.3),
-            CLLocationCoordinate2D(latitude: 37.73, longitude: 32.4)
-        ]
-        let timestamp = Date()
-        return coordinates.map { CLLocation(coordinate: $0, altitude: 0, horizontalAccuracy: 0, verticalAccuracy: 0, timestamp: timestamp) }
-    }
-
-
-    //'saveRoutesToFirestore' method here iterates through the recorded routes and calls the 'saveRouteToFirestore' method of the 'FirebaseManager' to save each one to the database.
-    
+//        func generateMockData() -> [CLLocation] {
+//            let coordinates = [
+//                CLLocationCoordinate2D(latitude: 37.74, longitude: 32.3),
+//                CLLocationCoordinate2D(latitude: 37.73, longitude: 32.4)
+//            ]
+//            let timestamp = Date()
+//            return coordinates.map { CLLocation(coordinate: $0, altitude: 0, horizontalAccuracy: 0, verticalAccuracy: 0, timestamp: timestamp) }
+//        }
+        
+        
+        //'saveRoutesToFirestore' method here iterates through the recorded routes and calls the 'saveRouteToFirestore' method of the 'FirebaseManager' to save each one to the database.
+        
     func saveRoutesToFirestore() {
         for route in routes {
             firebaseManager.saveRouteToFirestore(route: route) { result in
