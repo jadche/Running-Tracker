@@ -94,8 +94,6 @@ class FirebaseManager {
             }
         }
     }
-
-
-
-    // Add any other Firebase-related functions here, such as saving and deleting routes
+    
+    // Add any other Firebase-related functions here, such as deleting routes
 }
